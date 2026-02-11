@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a0a12" />
+    <meta property="og:image" content="/preview-push-the-button.webp" />
+    <meta property="og:title" content="Push The Button" />
+    <meta name="twitter:image" content="/preview.jpg" />
+    <meta property="twitter:title" content="Push The Button" />
+    <meta property="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/svg+xml" href="/favicon-light.svg" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png">
+    <link rel="preload" as="video" href="mov/staff.mp4" type="video/mp4" />
+    <title>Game Studio Simulator — Prompt. Play. Publish.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oxanium:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-9B70M8WD77"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-9B70M8WD77');
+    </script>
+  </head>
+  <body>
+    <canvas class="fx-canvas" id="fx-canvas"></canvas>
+    <main class="page">
+      <div class="hero-title hero-title--image" aria-label="GAME STUDIO SIMULATOR">
+        <img
+          class="hero-title__img"
+          src="./img/wordmark-monochrome.png"
+          alt="GAME STUDIO SIMULATOR"
+        />
+      </div>
+      <h1 class="tagline">Prompt. Play. Publish.</h1>
+      <p class="subtitle">
+        You have a game idea.
+      </p>
+      <p class="subtitle">
+        We have the agents.
+      </p>
+      <p class="subtitle" style="margin-bottom: 0">
+        Prompt it, watch it come
+          to life, iterate like crazy, and actually finish something for once in
+          your pathetic, <em>human</em> life.
+      </p>
+      <div class="waitlist-area">
+        <div class="waitlist-stack">
+          <button class="btn btn--xl" id="waitlist-button" type="button">
+            I Have a Game Idea
+          </button>
+          <div class="waitlist-panel is-hidden" id="waitlist-panel">
+            <div class="waitlist-content">
+              <form class="waitlist-form" id="waitlist-form">
+                <div class="waitlist-field">
+                  <div class="waitlist-label">Email address</div>
+                  <div class="waitlist-row">
+                    <input
+                      class="waitlist-input"
+                      id="email"
+                      type="email"
+                      placeholder="you@example.com"
+                      autocomplete="email"
+                    />
+                    <button
+                      class="btn btn--secondary waitlist-submit"
+                      type="submit"
+                    >
+                      <span class="waitlist-submit__full">
+                        Join the waitlist
+                      </span>
+                      <span class="waitlist-submit__short">Join</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="waitlist-status" data-state="idle"></div>
+              </form>
+              <div class="controls">
+                <button class="btn btn--audio" id="audio-toggle" type="button">
+                  ▶
+                </button>
+                <button
+                  class="btn btn--audio btn--audio-next"
+                  id="next-track-button"
+                  type="button"
+                  aria-label="Next track"
+                  disabled
+                >
+                  ⏭
+                </button>
+                <div class="chips-row">
+                  <div class="chip chip--subtle" id="track-label">
+                    Ready to play
+                  </div>
+                </div>
+              </div>
+              <div class="debug-seek" id="debug-seek">
+                <div class="debug-seek__label">Debug seek</div>
+                <div class="debug-seek__row">
+                  <input
+                    class="debug-seek__range"
+                    id="seek-slider"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    value="0"
+                  />
+                  <div class="debug-seek__time" id="seek-time">0:00</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="lyrics-panel" id="lyrics-panel" aria-live="polite">
+            <div class="lyrics-line" id="lyrics-line">
+              Game. Studio. Simulator.
+            </div>
+            <div class="share-prompt" id="share-prompt" hidden>
+              <div
+                class="share-prompt__message"
+                id="share-prompt-message"
+                hidden
+              ></div>
+              <div class="share-prompt__button-wrap">
+                <button
+                  class="btn btn--secondary share-prompt__button"
+                  id="share-button"
+                  type="button"
+                >
+                  Share This!
+                </button>
+                <div
+                  class="share-toast"
+                  id="share-toast"
+                  role="status"
+                  aria-live="polite"
+                  hidden
+                >
+                  Copied URL to clipboard.
+                </div>
+              </div>
+              <div
+                class="share-prompt__status"
+                id="share-status"
+                aria-live="polite"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <div class="waitlist-media is-hidden" id="waitlist-media">
+          <video
+            id="staff-video"
+            src="mov/staff.mp4"
+            poster="img/ensemble.webp"
+            muted
+            loop
+            playsinline
+            preload="metadata"
+          ></video>
+        </div>
+      </div>
+      <section
+        class="act-two"
+        id="act-two"
+        aria-hidden="true"
+        hidden
+      >
+        <div class="act-two__intro">
+          <h2 class="act-two__team-title act-two__team-title--intro reveal-item">
+            Why GSS?
+          </h2>
+          <p class="act-two__line reveal-item">
+            You can’t make a <i>real game</i> with a single prompt.
+          </p>
+          <p class="act-two__line reveal-item">
+            <i>But you can</i> direct a team of AI agents to create a game
+            <i>together</i>. <b>Your own Game Studio</b>.
+          </p>
+          <p class="act-two__line reveal-item">
+            Prompt. Play. Prompt. Iterate. Prompt. Refine.
+          </p>
+          <p class="act-two__line reveal-item">
+            It’s time to close all your other tabs, put on your director cap, and bring your dream game idea to life.
+          </p>
+        </div>
+        <h2 class="act-two__team-title reveal-item">The Team</h2>
+        <div class="agent-showcase">
+          <article class="agent-card reveal-item">
+            <div class="agent-avatar">
+              <img
+                src="img/showrunner.webp"
+                alt="Showrunner avatar"
+                loading="lazy"
+              />
+            </div>
+            <div class="agent-copy">
+              <div class="agent-title">Showrunner</div>
+              <div class="agent-subtitle">
+                Keeps the chaos on a schedule and the snacks on order.
+              </div>
+            </div>
+          </article>
+          <article class="agent-card agent-card--right reveal-item">
+            <div class="agent-avatar">
+              <img
+                src="img/screenwriter.webp"
+                alt="Screenwriter avatar"
+                loading="lazy"
+              />
+              <video
+                class="agent-avatar__video agent-avatar__video--lazy"
+                data-src="mov/screenwriter.mp4"
+                muted
+                playsinline
+                loop
+                preload="none"
+              ></video>
+            </div>
+            <div class="agent-copy">
+              <div class="agent-title">Screenwriter</div>
+              <div class="agent-subtitle">
+                Makes the quest dialog sound heroic and unpaid.
+              </div>
+            </div>
+          </article>
+          <article class="agent-card reveal-item">
+            <div class="agent-avatar">
+              <img
+                src="img/worldbuilder.webp"
+                alt="World Builder avatar"
+                loading="lazy"
+              />
+              <video
+                class="agent-avatar__video"
+                id="worldbuilder-avatar-video"
+                src="mov/worldbuilder.mp4"
+                muted
+                playsinline
+                preload="metadata"
+              ></video>
+            </div>
+            <div class="agent-copy">
+              <div class="agent-title">World Builder</div>
+              <div class="agent-subtitle">
+                Invents lore faster than you can say "open world."
+              </div>
+            </div>
+          </article>
+          <article class="agent-card agent-card--right reveal-item">
+            <div class="agent-avatar">
+              <img
+                src="img/gameplay-designer.webp"
+                alt="Gameplay Designer avatar"
+                loading="lazy"
+              />
+            </div>
+            <div class="agent-copy">
+              <div class="agent-title">Gameplay Designer</div>
+              <div class="agent-subtitle">
+                Turns fun into spreadsheets and back again.
+              </div>
+            </div>
+          </article>
+          <article class="agent-card reveal-item">
+            <div class="agent-avatar">
+              <img
+                src="img/level-designer.webp"
+                alt="Level Designer avatar"
+                loading="lazy"
+              />
+            </div>
+            <div class="agent-copy">
+              <div class="agent-title">Level Designer</div>
+              <div class="agent-subtitle">
+                Jumping puzzles are his speciality.
+              </div>
+            </div>
+          </article>
+          <article class="agent-card agent-card--right reveal-item">
+            <div class="agent-avatar">
+              <img
+                src="img/visual-stylist.webp"
+                alt="Visual Stylist avatar"
+                loading="lazy"
+              />
+            </div>
+            <div class="agent-copy">
+              <div class="agent-title">Visual Stylist</div>
+              <div class="agent-subtitle">
+                Is pretty important and she knows it.
+              </div>
+            </div>
+          </article>
+          <article class="agent-card reveal-item">
+            <div class="agent-avatar">
+              <img
+                src="img/sound-designer.webp"
+                alt="Sound Designer avatar"
+                loading="lazy"
+              />
+              <video
+                class="agent-avatar__video agent-avatar__video--lazy"
+                data-src="mov/sound-designer.mp4"
+                muted
+                playsinline
+                loop
+                preload="none"
+              ></video>
+            </div>
+            <div class="agent-copy">
+              <div class="agent-title">Sound Designer</div>
+              <div class="agent-subtitle">
+                Adds footsteps that sound expensive.<br>She also wrote this music.
+              </div>
+            </div>
+          </article>
+          <article class="agent-card agent-card--right reveal-item">
+            <div class="agent-avatar">
+              <img
+                src="img/swe.webp"
+                alt="Software Engineer avatar"
+                loading="lazy"
+              />
+            </div>
+            <div class="agent-copy">
+              <div class="agent-title">Software Engineer</div>
+              <div class="agent-subtitle">
+                He calls his computer ”Jessica”.
+              </div>
+            </div>
+          </article>
+          <article class="agent-card reveal-item">
+            <div class="agent-avatar">
+              <img
+                src="img/qa.webp"
+                alt="QA avatar"
+                loading="lazy"
+              />
+            </div>
+            <div class="agent-copy">
+              <div class="agent-title">QA Gremlin</div>
+              <div class="agent-subtitle">
+                Finds the one bug hiding behind the door.
+              </div>
+            </div>
+          </article>
+          <article class="agent-card agent-card--right reveal-item">
+            <div class="agent-avatar">
+              <img
+                src="img/easter-egg-creator.webp"
+                alt="Easter Egg Creator avatar"
+                loading="lazy"
+              />
+            </div>
+            <div class="agent-copy">
+              <div class="agent-title">Easter Egg Creator</div>
+              <div class="agent-subtitle">
+                Hides delightful secrets in a few of your game’s nooks.
+              </div>
+            </div>
+          </article>
+        </div>
+        <h2 class="act-two__team-title reveal-item">The Dev</h2>
+        <div class="agent-showcase">
+          <a
+            class="agent-card agent-card--link reveal-item"
+            href="https://mxcl.dev"
+            target="_blank"
+            rel="noopener"
+          >
+            <div class="agent-avatar">
+              <img
+                src="img/mxcl.webp"
+                alt="mxcl avatar"
+                loading="lazy"
+              />
+            </div>
+            <div class="agent-copy">
+              <div class="agent-title">mxcl</div>
+              <div class="agent-subtitle">
+                Legendary open source dev with battle-tested history.
+              </div>
+            </div>
+          </a>
+          <p class="act-two__line reveal-item">
+            Max Howell knows how creative people and developers think. As the creator of Homebrew — used by tens of millions — and PromiseKit — built into over 100,000 apps — he's spent his career building tools that get out of the way and let people make things. He understands the itch: you want to create something, not lose weeks figuring out how to build the thing that lets you create it.
+          </p>
+          <p class="act-two__line reveal-item">
+            That's exactly the spirit behind Game Studio Simulator. GSS has been <a href="https://github.com/mxcl/game-studio-simulator" target="_blank" rel="noopener">open source</a> from day one, and it's staying that way. Max is building in public, with Twitch streams coming soon at <a href="https://www.twitch.tv/mxhwll" target="_blank" rel="noopener">twitch.tv/mxhwll</a> — no smoke and mirrors, just real development in the open.
+          </p>
+          <p class="act-two__line reveal-item">
+            This is grassroots. Built for real people by real people — not finance bros or gatekeepers. Come be part of the journey. We can't wait to see what you make.
+          </p>
+        </div>
+        <div class="waitlist-repeat-row reveal-item">
+          <div class="waitlist-panel waitlist-panel--repeat">
+            <div class="waitlist-content">
+              <form class="waitlist-form" id="waitlist-form-2">
+                <div class="waitlist-field">
+                  <div class="waitlist-label">Email address</div>
+                  <div class="waitlist-row">
+                    <input
+                      class="waitlist-input"
+                      id="email-2"
+                      type="email"
+                      placeholder="you@example.com"
+                      autocomplete="email"
+                    />
+                    <button
+                      class="btn btn--secondary waitlist-submit"
+                      type="submit"
+                    >
+                      <span class="waitlist-submit__full">
+                        Waitlist
+                      </span>
+                      <span class="waitlist-submit__short">Join</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="waitlist-status" data-state="idle"></div>
+              </form>
+            </div>
+          </div>
+          <div class="waitlist-repeat-art" aria-hidden="true">
+            <img src="./img/work-table.webp" alt="" />
+          </div>
+        </div>
+        <div
+          class="share-prompt share-prompt--act-two"
+          id="act-two-share-prompt"
+          hidden
+        >
+          <div class="share-prompt__button-wrap">
+            <button
+              class="btn btn--secondary share-prompt__button"
+              id="act-two-share-button"
+              type="button"
+            >
+              Share This!
+            </button>
+            <div
+              class="share-toast"
+              id="act-two-share-toast"
+              role="status"
+              aria-live="polite"
+              hidden
+            >
+              Copied URL to clipboard.
+            </div>
+          </div>
+          <div
+            class="share-prompt__status"
+            id="act-two-share-status"
+            aria-live="polite"
+          ></div>
+        </div>
+      </section>
+      <footer class="site-footer">
+        <span class="site-footer__copyright">© 2026 Game Studio Simulator</span>
+        <a
+          href="https://github.com/mxcl/game-studio-simulator"
+          target="_blank"
+          rel="noopener"
+        >
+          GitHub
+        </a>
+        <a href="https://www.youtube.com/@gamestudiosimulator" target="_blank" rel="noopener">YouTube</a>
+        <a href="https://x.com/gamestudiosim" target="_blank" rel="noopener">𝕏</a>
+        <a href="https://discord.gg/GhDYVBt2" target="_blank" rel="noopener">Discord</a>
+        Be One w/the Slop
+      </footer>
+    </main>
+
+    <div class="share-modal" id="share-modal" hidden>
+      <div class="share-modal__backdrop" id="share-modal-backdrop"></div>
+      <div
+        class="share-modal__dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="share-modal-title"
+      >
+        <button
+          class="share-modal__close"
+          id="share-modal-close"
+          type="button"
+          aria-label="Close share dialog"
+        >
+          ×
+        </button>
+        <h3 class="share-modal__title" id="share-modal-title">Share This!</h3>
+        <p class="share-modal__copy">Copy this link:</p>
+        <div class="share-modal__row">
+          <input
+            class="share-modal__url"
+            id="share-modal-url"
+            type="text"
+            readonly
+          />
+          <button
+            class="btn btn--secondary share-modal__copy-btn"
+            id="share-modal-copy-button"
+            type="button"
+          >
+            Copy Link
+          </button>
+        </div>
+        <div
+          class="share-modal__status"
+          id="share-modal-status"
+          aria-live="polite"
+        ></div>
+      </div>
+    </div>
+
+    <audio id="bg-audio" preload="auto"></audio>
+
+    <script src="runtime-config.js"></script>
+    <script src="main.js"></script>
+
+  </body>
+</html>
